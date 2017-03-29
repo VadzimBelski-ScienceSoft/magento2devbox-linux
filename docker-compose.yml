@@ -1,0 +1,96 @@
+##
+# Services needed to run Magento2 application on Docker
+#
+# Docker Compose defines required services and attach them together through aliases
+##
+version: '2'
+services:
+    web:
+        container_name: magento2devbox_web_698953a5ef54ad0d9087b88c980efcd3
+        restart: always
+        image: magento2
+        volumes:
+          - "./shared/webroot:/var/www/magento2"
+          - "~/.composer:/home/magento2/.composer"
+          - "~/.ssh:/home/magento2/.ssh"
+          - "./shared/logs/apache2:/var/log/apache2"
+          - "./shared/logs/php-fpm:/var/log/php-fpm"
+          - "./shared/.magento-cloud:/home/magento2/.magento-cloud"
+        environment:
+          - USE_SHARED_WEBROOT=1
+          - SHARED_CODE_PATH="/home/magento2/magento2"
+          - USE_RABBITMQ=1
+          - USE_REDIS_FULL_PAGE_CACHE=1
+          - USE_REDIS_CACHE=1
+          - USE_REDIS_SESSIONS=1
+          - USE_VARNISH=1
+          - USE_ELASTICSEARCH=1
+          - MAGENTO_PUBLIC_KEY=8dececc25f5895095369eb428b55e306
+          - MAGENTO_PRIVATE_KEY=375722eea0c2ef1a7190b1a17b4f1600
+          - MAGENTO_USE_SOURCES_IN_HOST=0
+          - CREATE_SYMLINK_EE=0
+          - HOST_CE_PATH=./shared/webroot
+          - EE_DIRNAME=magento2ee
+          - MAGENTO_DOWNLOAD_SOURCES_COMPOSER=1
+          - MAGENTO_EDITION=ce
+          - MAGENTO_VERSION=2.1.5
+          - MAGENTO_SAMPLE_DATA_INSTALL=1
+          - MAGENTO_DOWNLOAD_SOURCES_CLOUD=0
+          - MCLOUD_USERNAME=
+          - MCLOUD_PASSWORD=
+          - MCLOUD_GENERATE_NEW_TOKEN=
+          - MCLOUD_PROJECT=
+          - MCLOUD_BRANCH=
+          - MAGENTO_CRON_RUN=0
+          - MAGENTO_DI_COMPILE=0
+          - MAGENTO_GRUNT_COMPILE=0
+          - MAGENTO_STATIC_CONTENTS_DEPLOY=0
+          - MAGENTO_BACKEND_PATH=admin
+          - MAGENTO_ADMIN_USER=admin
+          - MAGENTO_ADMIN_PASSWORD=admin123
+        ports:
+          - "80"
+          - "22"
+
+    db:
+        container_name: magento2devbox_db_698953a5ef54ad0d9087b88c980efcd3
+        restart: always
+        image: mysql:5.6
+        ports:
+          - "3306"
+        environment:
+          - MYSQL_ROOT_PASSWORD=root
+          - MYSQL_DATABASE=magento2
+        volumes:
+          - "./shared/db:/var/lib/mysql"
+          - "./shared/var/logs/mysql:/var/log/mysql"
+
+    varnish:
+        container_name: magento2devbox_varnish_698953a5ef54ad0d9087b88c980efcd3
+        restart: always
+        depends_on:
+          - "web"
+        image: magento/magento2devbox-varnish:latest
+        ports:
+          - "8080:6081"
+
+    redis:
+        container_name: magento2devbox_redis_698953a5ef54ad0d9087b88c980efcd3
+        restart: always
+        image: redis:3.0.7
+
+    rabbit:
+        container_name: magento2devbox_rabbit_698953a5ef54ad0d9087b88c980efcd3
+        restart: always
+        image: rabbitmq:3-management
+        ports:
+          - "15672"
+          - "5672"
+
+    elasticsearch:
+        container_name: magento2devbox_elastic_698953a5ef54ad0d9087b88c980efcd3
+        restart: always
+        image: elasticsearch:2
+        ports:
+          - "9200"
+
