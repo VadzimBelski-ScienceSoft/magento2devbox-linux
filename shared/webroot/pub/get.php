@@ -6,6 +6,8 @@
  * See COPYING.txt for license details.
  */
 
+echo 123;exit;
+
 use Magento\Framework\App\Cache\Frontend\Factory;
 use Magento\Framework\App\ObjectManagerFactory;
 use Magento\Framework\HTTP\PhpEnvironment\Request;

@@ -1,12 +1,10 @@
 # Intro
 
-
-Change host
+Build Docker with
 
 ```bash
-UPDATE core_config_data  SET value = 'http://localhost:8080/'  WHERE path IN ('web/secure/base_url', 'web/unsecure/base_url');
+docker build . -t magento2
 ```
-
 
 This repository is part of Magento DevBox, a simple way to install a Magento 2 development environment. 
 The repository contains a Dockerfile for the Web container which includes Apache web server, PHP and a set of scripts to install Magento. The repository is used to automatically create an image https://hub.docker.com/r/magento/magento2devbox-web/, which is used for creating the development environment which you can create here https://magento.com/tech-resources/download.
